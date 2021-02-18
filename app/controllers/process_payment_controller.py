@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask import request, jsonify
 from flask_expects_json import expects_json
 from app.models.process_payment_model import PaymentModel
-import json
+import json, jsonschema
 
 payment_request_schema = {
     "type" : "object",
@@ -32,9 +32,11 @@ class ProcessPaymentController(MethodView):
 
     @expects_json(payment_request_schema)
     def post(self):
-        request_json = request.get_json()
-        request_process = PaymentModel()
-        return request_process.processpayment(request_json)
+            jsonschema.validate(request.json, payment_request_schema)
+            request_json = request.get_json()
+            request_process = PaymentModel()
+            return request_process.processpayment(request_json)
+            return response    
 
     def put(self):
         return "Responding to a PUT request"
